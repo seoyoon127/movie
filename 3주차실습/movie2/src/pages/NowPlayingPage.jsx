@@ -14,10 +14,10 @@ function NowPlayingPage(){
 
   const[movies, setMovies] = useState([]);
 
-  useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        const response = await fetch('https://api.themoviedb.org/3/movie/now_playing?api_key=c5ad51876c92eece98e5cda3a82b3d8b');
+  useEffect(() => {  //마운트될 시 실행
+    const fetchMovies = async () => { //비동기 구문-async, await 이용:.then보다 가독성 좋음
+      try { //jsx에선 가독성을 위해 try,catch문 형식을 이용
+        const response = await fetch('https://api.themoviedb.org/3/movie/now_playing?api_key=c5ad51876c92eece98e5cda3a82b3d8b');  
         const data = await response.json();
         setMovies(data.results);
       } catch (error) {
