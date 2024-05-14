@@ -1,0 +1,43 @@
+import { BrowserRouter,Route, Routes} from "react-router-dom";
+import MainPage from "./pages/MainPage.jsx";
+import Popular from "./pages/PopularPage.jsx";
+import NowPlaying from "./pages/NowPlayingPage.jsx";
+import TopRated from "./pages/TopRatedPage.jsx";
+import Upcoming from "./pages/Upcoming.jsx";
+import Header from "./component/Header.jsx";
+import MovieDetails from "./pages/MovieDetails.jsx";
+import NotFound from "./pages/NotFound.jsx";
+import React from "react";
+import styled from 'styled-components';
+
+
+const Root=styled.div`
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:100%;
+`
+
+function App() {
+
+  return (
+  <div>
+    <Root>
+      <BrowserRouter>
+        <Header />
+        <Routes>
+          <Route path="/" element={<MainPage />} /> 
+          <Route path="/Popular" element={<Popular />} />
+          <Route path="/NowPlaying" element={<NowPlaying />} />
+          <Route path="/TopRated" element={<TopRated />} />
+          <Route path="/Upcoming" element={<Upcoming />} />
+          <Route path="/:title" element={<MovieDetails />} />
+          <Route path="/*" element={<NotFound />} />
+       </Routes>
+      </BrowserRouter>
+    </Root>
+  </div>
+  );
+}
+export default App;
+
