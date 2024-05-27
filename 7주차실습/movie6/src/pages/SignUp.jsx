@@ -44,7 +44,7 @@ const Login=styled.div`
     color:white;
     display:flex;
     position:relative; 
-    left:37%; top:70%; 
+    left:36%; top:77%; 
     .link{
         color:white;
         text-decoration:none;
@@ -56,6 +56,7 @@ const Login=styled.div`
 function SignUpPage(){
 
     const [name, setName]=useState("");
+    const [id, setId]=useState("");
     const [email, setEmail]=useState("");
     const [age, setAge]=useState("");
     const [password, setPassword]=useState("");
@@ -66,6 +67,8 @@ function SignUpPage(){
         // 입력 필드 값 변경 시 해당 상태를 업데이트하고 유효성 검사 수행
         if (name === "name") {
             setName(value);
+        }else if (name === "id") {
+            setId(value);
         } else if (name === "email") {
             setEmail(value);
         } else if (name === "age") {
@@ -78,6 +81,7 @@ function SignUpPage(){
     };
 
     const [name_error,setNameError]=useState("");
+    const [id_error,setIdError]=useState("");
     const [email_error,setEmailError]=useState("");
     const [age_error,setAgeError]=useState("");
     const [pw_error,setPwError]=useState("");
@@ -99,6 +103,12 @@ function SignUpPage(){
             }
             else
                 setNameError("");
+            //아이디
+            if (id===""){
+                setIdError("아이디를 입력해주세요");
+                isValid=false;
+            }else
+            setIdError("");
             //이메일
             if(email===""){
                 setEmailError("이메일을 입력해주세요");
@@ -166,101 +176,21 @@ function SignUpPage(){
             setIsValid(isValid);
         }
         checkInput();
-    },[name, email, age, password, passwordCheck])
-    /*
-    function checkInput(){
-        let isValid=true;
-        //이름
-        if (name===""){
-            setNameError("이름을 입력해주세요");
-            isValid=false;
-        }
-        else if(!/^[a-zA-Z가-힣]+$/.test(name)){
-            setEmailError("이름은 문자열이어야 합니다");
-            isValid=false;
-        }
-        else
-            setNameError("");
-        //이메일
-        if(email===""){
-            setEmailError("이메일을 입력해주세요");
-            isValid=false;
-        }
-        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-            setEmailError("올바른 이메일 형식이 아닙니다");
-            isValid=false;
-        }
-        else
-            setEmailError("");
-        //나이
-        if(age===""){
-            setAgeError("나이를 입력해주세요");
-            isValid=false;
-        }
-        else if(isNaN(Number(age))){
-            setAgeError("숫자로 입력해야 합니다");
-            isValid=false;
-        } 
-        else if(age<0){
-            setAgeError("양수로 입력해야 합니다");
-            isValid=false;
-        }
-        else if(!Number.isInteger(Number(age))){
-            setAgeError("정수로 입력해야 합니다");
-            isValid=false;
-        }
-        else if(age<19){
-            setAgeError("19세 이상만 가입 가능 합니다");
-            isValid=false;
-        }
-        else
-            setAgeError("");
-        //비밀번호
-        if(password===""){
-            setPwError("비밀번호를 입력하세요");
-            isValid=false;
-        }
-        else if(password.length<4){
-            setPwError("최소 4자리 이상이어야 합니다");
-            isValid=false;
-        }
-        else if(password.length>12){
-            setPwError("최대 12자리까지 가능합니다");
-            isValid=false;
-        }
-        else if(!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password) || !/[^a-zA-Z0-9]/.test(password)){
-            setPwError("영어, 숫자, 특수문자를 조합하야 합니다");
-            isValid=false;
-        }
-        else
-            setPwError("");
-        //비밀번호
-        if(passwordCheck===""){
-            setPwcError("비밀번호를 입력하세요");
-            isValid=false;
-        }
-        else if(passwordCheck!==password){
-            setPwcError("비밀번호가 일치하지 않습니다");
-            isValid=false;
-        }
-        else
-            setPwcError("");  
-        setIsValid(isValid);
-    }*/
+    },[name, id, email, age, password, passwordCheck])
 
-    /*const formData = {
+    const formData = {
         name: name,
         email: email,
         age: age,
         password: password,
         passwordCheck: passwordCheck
-      };*/  
+      };  
     
     const navigate = useNavigate();
 
     function handleSubmit(){
         if(isValid){
-            navigate('/LogIn');
+            navigate('/LogIn',{ state: { formData: formData } } ); 
         }
     }
     return(
@@ -268,6 +198,7 @@ function SignUpPage(){
             <br/><h2>회원가입 페이지</h2>
             <Input>
                 <input placeholder="이름을 입력하세요" name="name" value={name} onChange={handleChange} tf={name_error}/><div>{name_error}</div><br/>
+                <input placeholder="아이디를 입력하세요" name="id" value={id} onChange={handleChange} tf={id_error}/><div>{id_error}</div><br/>
                 <input placeholder="이메일을 입력하세요" name="email" value={email} onChange={handleChange}/><div>{email_error}</div><br/>
                 <input placeholder="나이를 입력하세요" name="age" value={age} onChange={handleChange}/><div>{age_error}</div><br/>
                 <input type="password" placeholder="비밀번호를 입력하세요" name="password" onChange={handleChange}/><div>{pw_error}</div><br/>
@@ -276,7 +207,7 @@ function SignUpPage(){
             </Input> 
             <Login>
                 <div>이미 아이디가 있으신가요?</div>
-                <Link to='LogIn' className="link">로그인 페이지로 이동하기</Link>
+                <Link to='/LogIn' className="link">로그인 페이지로 이동하기</Link>
             </Login>
         </Bg>
     )
