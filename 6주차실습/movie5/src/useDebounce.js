@@ -9,7 +9,7 @@ const useDebounce = (value, delay) => {
   
       return () => {
         clearTimeout(timer);
-      }; //searxch 변경 시점에 clearTimeout을 해줘야함
+      }; //search 변경 시점에 clearTimeout을 해줘야함
     }, [value,delay]);
   
       return debouncedValue;

@@ -11,7 +11,9 @@ import MovieDetails from "./pages/MovieDetails.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import React from "react";
 import styled from 'styled-components';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+const queryClient = new QueryClient();
 
 const Root=styled.div`
   position:absolute;
@@ -22,24 +24,24 @@ const Root=styled.div`
 function App() {
 
   return (
-  <div>
-    <Root>
-      <BrowserRouter>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<MainPage />} /> 
-          <Route path="/SignUp" element={<SignUp />} />
-          <Route path="/LogIn" element={<LogIn />} />
-          <Route path="/Popular" element={<Popular />} />
-          <Route path="/NowPlaying" element={<NowPlaying />} />
-          <Route path="/TopRated" element={<TopRated />} />
-          <Route path="/Upcoming" element={<Upcoming />} />
-          <Route path="/:id" element={<MovieDetails />} />
-          <Route path="/*" element={<NotFound />} />
-       </Routes>
-      </BrowserRouter>
-    </Root>
-  </div>
+    <QueryClientProvider client={queryClient}>
+      <Root>
+        <BrowserRouter>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<MainPage />} /> 
+            <Route path="/SignUp" element={<SignUp />} />
+            <Route path="/LogIn" element={<LogIn />} />
+            <Route path="/Popular" element={<Popular />} />
+            <Route path="/NowPlaying" element={<NowPlaying />} />
+            <Route path="/TopRated" element={<TopRated />} />
+            <Route path="/Upcoming" element={<Upcoming />} />
+            <Route path="/:id" element={<MovieDetails />} />
+            <Route path="/*" element={<NotFound />} />
+        </Routes>
+        </BrowserRouter>
+        </Root>
+    </QueryClientProvider>
   );
 }
 export default App;

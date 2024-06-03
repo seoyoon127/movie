@@ -14,7 +14,7 @@ const IMG=styled.img`
 `
 const InfoBox=styled.div`
   position:relative;
-  width:100%; height:80px;
+  width:100%; height:70px;
   color:white;
   line-height: 25px;
   background-color: rgb(44, 44, 181);

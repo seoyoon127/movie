@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react';
-import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styled  from 'styled-components';
 
 const Bg=styled.div`
@@ -21,37 +21,35 @@ const Input=styled.div`
         height:30px;
         border-radius:20px;
         border: white solid;
+        color:${props=>props.tf?'red':''};
     }
     .button{
-        border: #FFD252 solid;
         height:50px;
         font-weight:800;
         font-size:16px;
     }
     .true{
+        border: #FFD252 solid;
         background-color:#FFD252;
     }
     >div{
-        height:10px; //누르면 넓어지는건 나중에
+        height:10px; 
         margin-top:10px;
         color:red;
     }
 `
 function LogIn(){
-    //FormData가 잘 전달되는지 확인하기 위함
-    const location = useLocation();
-    const formData = location.state?.formData;
 
-    const[id,setId]=useState("");
+    const[username,setUsername]=useState("");
     const[password,setPassword]=useState("");
     const[isValid,setIsValid]=useState(true);
-    const[id_error,setIdError]=useState("");
+    const[username_error,setUsernameError]=useState("");
     const[pw_error,setPwError]=useState("");
 
     const handleChange=(e)=>{
         const{name,value}=e.target;
-        if (name==="id"){
-            setId(value);
+        if (name==="username"){
+            setUsername(value);
         }else if (name==="password"){
             setPassword(value);
         }
@@ -60,38 +58,75 @@ function LogIn(){
         function checkInput(){
             let isValid=true;
             //아이디
-            if(id===''){
-                setIdError("아이디를 입력해주세요");
+            if(username===''){
+                setUsernameError("아이디를 입력해주세요");
                 isValid=false;
             }
             else{
-                setIdError("");
+                setUsernameError("");
             }
             //비밀번호
-            if(password===''){
-                setPwError("비밀번호를 입력해주세요");
+            if(password===""){
+                setPwError("비밀번호를 입력하세요");
                 isValid=false;
             }
-            else{
-                setPwError("");
+            else if(password.length<4){
+                setPwError("최소 4자리 이상이어야 합니다");
+                isValid=false;
             }
-
-            setIsValid(isValid);
-        } 
-        checkInput();
-    },)
-    useEffect(() => {
-        if (formData) {
-            console.log('Received Form Data:', formData);
+            else if(password.length>12){
+                setPwError("최대 12자리까지 가능합니다");
+                isValid=false;
+            }
+            else if(!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password) || !/[^a-zA-Z0-9]/.test(password)){
+                setPwError("영어, 숫자, 특수문자를 조합하야 합니다");
+                isValid=false;
+            }
+            else
+                setPwError("");
+        setIsValid(isValid);
         }
-    }, [formData]);
+        checkInput();
+    },[username, password,isValid])
+
+    const navigate=useNavigate();
+
+    const handleSubmit = async (token) => {
+        try {
+            const response = await fetch('http://localhost:8080/auth/me', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await response.json();
+    
+            if (response.status === 200) {
+                // 서버로부터 받은 사용자 정보(data)를 활용하여 필요한 작업을 수행합니다.
+                console.log('User profile:', data);
+                navigate('/LogIn');
+            } else if (response.status === 404) {
+                console.error('User not found');
+            } else {
+                console.error('Failed to fetch user profile:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching user profile:', error);
+        }
+    }
+    
+    // 유효한 토큰을 가져와서 사용합니다.
+    //const token = localStorage.getItem('token'); // 로그인 시 저장한 토큰
+    
+    
     return(
         <Bg>
             <br/><h2>로그인 페이지</h2>
             <Input>
-                <input placeholder='아이디' name="id" value={id} onChange={handleChange}/><br/>{id_error}<br/>
-                <input placeholder='비밀번호' name="password" value={password}  onChange={handleChange}/><br/>{pw_error}<br/><br/>
-                <input type="button" className={isValid ? 'button true' : 'button'} value="로그인"/>
+                <input placeholder='아이디' name="username" value={username} onChange={handleChange}/><br/><div>{username_error}</div><br/>
+                <input type="password" placeholder='비밀번호' name="password" value={password}  onChange={handleChange}/><br/><div>{pw_error}</div><br/><br/>
+                <input type="button" className={isValid ? 'button true' : 'button'} onClick={handleSubmit} value="로그인"/>
             </Input>
         </Bg>
     )

@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import { Link,useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import axios from 'axios';
 
 const Bg=styled.div`
     position:relative; 
@@ -35,7 +36,7 @@ const Input=styled.form`
         background-color: #FFD252;
     }
     >div{
-        height:10px; //누르면 넓어지는건 나중에
+        height:10px; 
         margin-top:10px;
         color:red;
     }
@@ -56,7 +57,7 @@ const Login=styled.div`
 function SignUpPage(){
 
     const [name, setName]=useState("");
-    const [id, setId]=useState("");
+    const [username, setUsername]=useState("");
     const [email, setEmail]=useState("");
     const [age, setAge]=useState("");
     const [password, setPassword]=useState("");
@@ -67,8 +68,8 @@ function SignUpPage(){
         // 입력 필드 값 변경 시 해당 상태를 업데이트하고 유효성 검사 수행
         if (name === "name") {
             setName(value);
-        }else if (name === "id") {
-            setId(value);
+        }else if (name === "username") {
+            setUsername(value);
         } else if (name === "email") {
             setEmail(value);
         } else if (name === "age") {
@@ -79,9 +80,9 @@ function SignUpPage(){
             setPasswordCheck(value);
         }
     };
-
+    
     const [name_error,setNameError]=useState("");
-    const [id_error,setIdError]=useState("");
+    const [username_error,setUsernameError]=useState("");
     const [email_error,setEmailError]=useState("");
     const [age_error,setAgeError]=useState("");
     const [pw_error,setPwError]=useState("");
@@ -104,11 +105,11 @@ function SignUpPage(){
             else
                 setNameError("");
             //아이디
-            if (id===""){
-                setIdError("아이디를 입력해주세요");
+            if (username===""){
+                setUsernameError("아이디를 입력해주세요");
                 isValid=false;
             }else
-            setIdError("");
+            setUsernameError("");
             //이메일
             if(email===""){
                 setEmailError("이메일을 입력해주세요");
@@ -176,29 +177,58 @@ function SignUpPage(){
             setIsValid(isValid);
         }
         checkInput();
-    },[name, id, email, age, password, passwordCheck])
+    },[name, username, email, age, password, passwordCheck]);
 
+    let userCounter=0;
     const formData = {
+        id:userCounter++,
         name: name,
         email: email,
         age: age,
+        username: username,
         password: password,
         passwordCheck: passwordCheck
-      };  
-    
+    };
     const navigate = useNavigate();
 
-    function handleSubmit(){
-        if(isValid){
-            navigate('/LogIn',{ state: { formData: formData } } ); 
+    
+    const handleSubmit =async () => {
+        if (isValid) {
+            try {
+                const response = await fetch('http://localhost:8080/auth/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                });
+
+                const data = await response.json();
+                console.log(response.status);
+                if (response.status === 201) {
+                    alert("회원가입이 정상적으로 처리되었습니다!");
+                    navigate('/login');
+                } else {
+                    if (data.message) {
+                        alert(data.message);
+                    } else {
+                        alert("회원가입에 실패했습니다. 다시 시도해주세요.");
+                    }
+                }
+            } catch (error) {
+                console.error('Error during signup:', error);
+                alert("회원가입 중 오류가 발생했습니다. 다시 시도해주세요.");
+            }
         }
-    }
+    };
+   
+
     return(
         <Bg>
             <br/><h2>회원가입 페이지</h2>
             <Input>
-                <input placeholder="이름을 입력하세요" name="name" value={name} onChange={handleChange} tf={name_error}/><div>{name_error}</div><br/>
-                <input placeholder="아이디를 입력하세요" name="id" value={id} onChange={handleChange} tf={id_error}/><div>{id_error}</div><br/>
+                <input placeholder="이름을 입력하세요" name="name" value={name} onChange={handleChange}/><div>{name_error}</div><br/>
+                <input placeholder="아이디를 입력하세요" name="username" value={username} onChange={handleChange} /><div>{username_error}</div><br/>
                 <input placeholder="이메일을 입력하세요" name="email" value={email} onChange={handleChange}/><div>{email_error}</div><br/>
                 <input placeholder="나이를 입력하세요" name="age" value={age} onChange={handleChange}/><div>{age_error}</div><br/>
                 <input type="password" placeholder="비밀번호를 입력하세요" name="password" onChange={handleChange}/><div>{pw_error}</div><br/>

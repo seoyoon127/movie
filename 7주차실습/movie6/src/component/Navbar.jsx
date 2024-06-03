@@ -1,5 +1,5 @@
-import React, { useState }  from 'react';
-import { Link ,useLocation,useParams } from 'react-router-dom'; 
+import React, { useState }  from 'react'; //
+import { Link ,useLocation } from 'react-router-dom'; 
 import styled from 'styled-components';
 
 const HeaderContainer = styled.div`
@@ -48,11 +48,10 @@ const HeaderRight=styled.div`
 export default function Header(){
     
     const location=useLocation();
-    const [logIn,setLogIn]=useState('로그인');
-    const param=useParams();
+    const [LogIn,setLogIn]=useState('로그인');
 
     function isLogIn(){
-
+        
     }
     return(
         <div>
@@ -61,8 +60,8 @@ export default function Header(){
                     <HeaderLeft ><Link className='link' to='/'>UMC Movie</Link></HeaderLeft>
                     <HeaderRight>
                         <ul>
-                            <li><Link className={`link ${location.pathname==='/SignUp'?'t':''}`}  to='/SignUp' >회원가입</Link></li>
                             <li><Link className={`link ${location.pathname==='/LogIn'?'t':''}`}  to='/LogIn' onClick={isLogIn}>{LogIn}</Link></li>
+                            <li><Link className={`link ${location.pathname==='/SignUp'?'t':''}`}  to='/SignUp' >회원가입</Link></li>
                             <li><Link className={`link ${location.pathname==='/Popular'?'t':''}`} to='/Popular'>Popular</Link></li>
                             <li><Link className={`link ${location.pathname==='/NowPlaying'?'t':''}`} to="/NowPlaying" >Now Playing</Link></li>
                             <li><Link className={`link ${location.pathname==='/TopRated'?'t':''}`} to="/TopRated" >Top Rated</Link></li>
