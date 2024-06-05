@@ -56,7 +56,7 @@ const BackContainer=styled.div`
     background-color:#FFD252; /* 스크롤바 막대 색상 */
     border-radius: 12px ;
   } 
-  background-color:${props=>props.hasMovie? 'rgb(40, 40, 83)':''};
+  
   display:flex; flex-wrap: wrap;
   width:1200px; height:700px;
   top:55%; left:15%;
@@ -96,11 +96,32 @@ const MovieStyle=styled.div`
         };
         fetchMovies();
       },[debouncedSearch]);
-  
 
+      const [id,setId]=useState('');
+
+      useEffect(() => { 
+        const storedId = localStorage.getItem("id");
+      setId(storedId || '');
+
+        const handleStorageChange = () => {
+          const updatedId = localStorage.getItem("id");
+          setId(updatedId || '');
+        };
+        window.addEventListener("storage", handleStorageChange);
+        return () => {
+          window.removeEventListener("storage", handleStorageChange);
+        };
+        /*
+        const storedId = localStorage.getItem("id");
+        if (storedId) {
+            setId(storedId);
+        } else {
+            setId('');
+        }*/
+    }, []);
       return(
         <div>
-          <Welcome><h2>환영합니다!</h2></Welcome>
+          <Welcome><h2>{id?`${id}님 환영합니다!`:'환영합니다'}</h2></Welcome>
           <SearchMovieTitle><h1>🎥 Find your movies!</h1></SearchMovieTitle>
           <div>
               <span><SearchMovieInput onChange={(e)=>{setSearch(e.target.value); }}></SearchMovieInput></span>
@@ -108,23 +129,22 @@ const MovieStyle=styled.div`
               <span><Load>로딩 중...</Load></span>
               {loading&&<span>로딩 중 입니다.</span>} 
           </div>
-          <BackContainer hasMovie={movies.length>0}>
-            {movies.length > 0 && ( //영화목록이 비어있지 않을 때
-              movies.map((item)=>(
-                <MovieStyle key={item.id}>
-                    <Movie 
-                      title={item.title}
-                      id={item.id}
-                      poster_path={item.poster_path}
-                      vote_average={item.vote_average}
-                      backdrop_path={item.backdrop_path}
-                      release_date={item.release_date}
-                      overview={item.overview}
-                    />
-                </MovieStyle>   
-              ))
-            )}
-          </BackContainer>
+          <BackContainer >
+          {movies.length > 0 && ( //영화목록이 비어있지 않을 때
+            movies.map((item)=>(
+              <MovieStyle key={item.id}>
+                  <Movie 
+                    title={item.title}
+                    poster_path={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
+                    vote_average={item.vote_average}
+                    backdrop_path={item.backdrop_path}
+                    release_date={item.release_date}
+                    overview={item.overview}
+                  />
+              </MovieStyle>   
+            ))
+          )}
+        </BackContainer>
         </div>
         
       );

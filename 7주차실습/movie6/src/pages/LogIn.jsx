@@ -90,34 +90,58 @@ function LogIn(){
     },[username, password,isValid])
 
     const navigate=useNavigate();
+    const formData = {
+        username: username,
+        password: password
+    };
 
     const handleSubmit = async (token) => {
         try {
             const response = await fetch('http://localhost:8080/auth/me', {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': 'Bearer token',
                     'Content-Type': 'application/json',
                 },
             });
-            const data = await response.json();
     
             if (response.status === 200) {
-                // 서버로부터 받은 사용자 정보(data)를 활용하여 필요한 작업을 수행합니다.
-                console.log('User profile:', data);
-                navigate('/LogIn');
-            } else if (response.status === 404) {
-                console.error('User not found');
-            } else {
-                console.error('Failed to fetch user profile:', response.statusText);
-            }
+                //유효한 토큰일 시 정보를 전달받음
+                localStorage.getItem("token",formData);
+            } 
+        
         } catch (error) {
-            console.error('Error fetching user profile:', error);
-        }
+        console.error('Error fetching user profile:', error);
     }
-    
     // 유효한 토큰을 가져와서 사용합니다.
     //const token = localStorage.getItem('token'); // 로그인 시 저장한 토큰
+        try { 
+            const response = await fetch('http://localhost:8080/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', 
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+            if (response.status === 200) {
+                alert("로그인되었습니다!");
+                localStorage.setItem("id",username);
+                localStorage.setItem("pw",password);
+                navigate('/');
+            } else {
+                if (data.message) {
+                    alert(data.message);
+                } else {
+                    alert("로그인에 실패했습니다. 다시 시도해주세요.");
+                }
+            }
+        } catch (error) {
+            console.error('Error during signup:', error);
+            alert("로그인 중 오류가 발생했습니다. 다시 시도해주세요.");
+        }
+    }
     
     
     return(

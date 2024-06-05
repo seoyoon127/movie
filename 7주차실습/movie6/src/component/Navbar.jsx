@@ -1,4 +1,4 @@
-import React, { useState }  from 'react'; //
+import React, { useEffect, useState }  from 'react'; 
 import { Link ,useLocation } from 'react-router-dom'; 
 import styled from 'styled-components';
 
@@ -49,9 +49,55 @@ export default function Header(){
     
     const location=useLocation();
     const [LogIn,setLogIn]=useState('로그인');
+    const [SignUp,setSignUp]=useState('회원가입');
+    const[LogInLink,setLogInLink]=useState('/LogIn');
 
+    useEffect(()=>{
+        const storedId = localStorage.getItem("id");
+        if (storedId){ //로그인 되었을 떄(localStorage에 id가 있을 때)
+            setSignUp('');
+            setLogIn('로그아웃');
+            setLogInLink('/');
+        } else {
+            setSignUp('회원가입');
+            setLogIn('로그인');
+            setLogInLink('/LogIn');
+          }
+    },[location])
+    useEffect(() => {
+        const handleStorageChange = () => {
+          const storedId = localStorage.getItem("id");
+          if (storedId) {
+            setSignUp('');
+            setLogIn('로그아웃');
+            setLogInLink('/');
+          } else {
+            setSignUp('회원가입');
+            setLogIn('로그인');
+            setLogInLink('/LogIn');
+          }
+        };
+    
+        window.addEventListener("storage", handleStorageChange);
+    
+        return () => {
+          window.removeEventListener("storage", handleStorageChange);
+        };
+      }, []);
     function isLogIn(){
-        
+        if(LogIn==='로그아웃'){ //로그아웃 버튼 눌렀을 때
+            localStorage.removeItem("id"); //토큰 제거
+            localStorage.removeItem("pw");
+            setSignUp('회원가입');
+            setLogIn('로그인');
+            setLogInLink('/LogIn');
+            window.dispatchEvent(new Event("storage")); //storage이벤트 발생시킴
+        }
+        else{
+            setSignUp('');
+            setLogIn('로그아웃');
+            setLogInLink('/');
+        }
     }
     return(
         <div>
@@ -60,8 +106,8 @@ export default function Header(){
                     <HeaderLeft ><Link className='link' to='/'>UMC Movie</Link></HeaderLeft>
                     <HeaderRight>
                         <ul>
-                            <li><Link className={`link ${location.pathname==='/LogIn'?'t':''}`}  to='/LogIn' onClick={isLogIn}>{LogIn}</Link></li>
-                            <li><Link className={`link ${location.pathname==='/SignUp'?'t':''}`}  to='/SignUp' >회원가입</Link></li>
+                            <li><Link className={`link ${location.pathname==='/SignUp'?'t':''}`}  to='/SignUp' >{SignUp}</Link></li>
+                            <li><Link className={`link ${location.pathname==='/LogIn'?'t':''}`}  to={LogInLink} onClick={isLogIn}>{LogIn}</Link></li>
                             <li><Link className={`link ${location.pathname==='/Popular'?'t':''}`} to='/Popular'>Popular</Link></li>
                             <li><Link className={`link ${location.pathname==='/NowPlaying'?'t':''}`} to="/NowPlaying" >Now Playing</Link></li>
                             <li><Link className={`link ${location.pathname==='/TopRated'?'t':''}`} to="/TopRated" >Top Rated</Link></li>
